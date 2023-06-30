@@ -2,8 +2,11 @@ from machine import Pin
 from time import sleep
 
 # Initializing the primary variables
-Reset = False
+Exit = False
+UserInputCheck = True
 
+# The Count of how many clock cycles have occured in the program
+CycleCount = 0
 
 # Defining Pin 25 (Linked to the Internal LED) on the Raspberry Pi Pico for us to send a signal out
 LEDPin25 = Pin(25, Pin.OUT)
@@ -14,7 +17,7 @@ def ClockCycle(Hertz):
     # Therfore a clock speed of 5 Hertz means 5 Clock Cycles completed in 1 Second
     
     
-    # The Speed variable is the number we will enter in the time.sleep function
+    # The Speed variable is the number we will enter in the sleep function
     Speed = 1 / float(Hertz)
     
     sleep(Speed)
@@ -23,13 +26,19 @@ def ClockCycle(Hertz):
     LEDPin25.toggle()
         
         
-# The CPU Running in a loop until the reset command has been entered
+# The CPU Running in a loop until the exit command has been entered
 
-Count = 0
 
-while Reset != True:
+while Exit != True:
     # User defined clock cycle speed
     ClockCycle(1)
+    CycleCount += 1
     
-    print(Count)
-    Count += 1
+    # If the UserInputCheck Variable
+    if UserInputCheck == True:
+        UserInput = input("### ")
+        
+        # If the 'EXIT' command is entered then set the Exit variable to True
+        if UserInput == "EXIT" : Exit = True
+        
+        
