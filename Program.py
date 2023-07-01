@@ -40,8 +40,6 @@ LEDPin25 = Pin(25, Pin.OUT)
 # Count of times the clock cycle has occured
 CycleCount = 0
 
-# The CPU Running in a loop until the exit command has been entered
-
 ALU = ArithmeticLogicUnit()
 
 # User defines the computers clock speed
@@ -122,6 +120,43 @@ while Exit != True:
                 # Call the Addition Function from the ALU Class
                 ALU.Addition(FinalAdditionNumbers)
                 ALUInputPoint = True
+                
+            # If the ADD Command is present, then commence the ADD Procedure
+            elif ALUInput[0:3] == "SUB":
+                
+                # Clock Cycle Pulse
+                ClockCycle()
+                CycleCount += 1
+                
+                # Retrieve all the numbers after the ADD Command
+                SubtractionNumbers = ALUInput[4:]
+                    
+                # Clock Cycle Pulse
+                ClockCycle()
+                CycleCount += 1
+                
+                # Split them into a list, based on the comma
+                RawSubtractionNumbers = SubtractionNumbers.split(",")
+                FinalSubtractionNumbers = []
+                
+                # Clock Cycle Pulse
+                ClockCycle()
+                CycleCount += 1
+                    
+                # Run a loop iterating through the list, and changing their data type to a float
+                for SubtractionNumber in RawSubtractionNumbers:
+                    SubtractionNumber = float(SubtractionNumber)
+
+                    # Then appending them into the new list, FinalAdditionNumbers which will be passed as a argument to the ALU Class
+                    FinalSubtractionNumbers.append(float(SubtractionNumber))
+                        
+                # Clock Cycle Pulse
+                ClockCycle()
+                CycleCount += 1
+                
+                # Call the Addition Function from the ALU Class
+                ALU.Subtraction(FinalSubtractionNumbers)
+                ALUInputPoint = True
         
                 
     # If the UserInputCheck Variable
@@ -143,5 +178,3 @@ while Exit != True:
         
         else:
             print(UserInput)
-        
-        
