@@ -49,6 +49,10 @@ class ArithmeticLogicUnit:
         for Number in Numbers:
             Primary = Primary / Number
         print(Primary)
+    
+    # The modulus function that performs the modulus function on two numbers 
+    def Modulus(self, NumberOne, NumberTwo):
+        print(NumberOne % NumberTwo)
         
 # Defining Pin 25 (Linked to the Internal LED) on the Raspberry Pi Pico for us to send a signal out
 LEDPin25 = Pin(25, Pin.OUT)
@@ -130,7 +134,7 @@ while Exit != True:
                     # Then appending them into the new list, FinalSubtractionNumbers which will be passed as a argument to the ALU Class
                     FinalSubtractionNumbers.append(float(SubtractionNumber))
 
-                # Call the Addition Function from the ALU Class
+                # Call the Subtraction Function from the ALU Class
                 ALU.Subtraction(FinalSubtractionNumbers)
                 ALUInputPoint = True
             
@@ -151,7 +155,7 @@ while Exit != True:
                     # Then appending them into the new list, FinalMultiplicationNumbers which will be passed as a argument to the ALU Class
                     FinalMultiplicationNumbers.append(float(MultiplicationNumber))
 
-                # Call the Addition Function from the ALU Class
+                # Call the Multiplication Function from the ALU Class
                 ALU.Multiplication(FinalMultiplicationNumbers)
                 ALUInputPoint = True
                 
@@ -172,8 +176,29 @@ while Exit != True:
                     # Then appending them into the new list, FinalDivisionNumbers which will be passed as a argument to the ALU Class
                     FinalDivisionNumbers.append(float(DivisionNumber))
 
-                # Call the Addition Function from the ALU Class
+                # Call the Division Function from the ALU Class
                 ALU.Division(FinalDivisionNumbers)
+                ALUInputPoint = True
+                
+            # If the MOD Command is present, then commence the MOD Procedure
+            elif ALUInput[0:3] == "MOD":
+                
+                # Retrieve all the numbers after the MOD Command
+                ModulusNumbers = ALUInput[4:]
+                
+                # Split them into a list, based on the comma
+                RawModulusNumbers = ModulusNumbers.split(",")
+                FinalModulusNumbers = []
+
+                # Run a loop iterating through the list, and changing their data type to a float
+                for ModulusNumber in RawModulusNumbers:
+                    ModulusNumber = float(ModulusNumber)
+
+                    # Then appending them into the new list, FinalModulusNumbers which will be passed as a argument to the ALU Class
+                    FinalModulusNumbers.append(float(ModulusNumber))
+
+                # Call the Modulus Function from the ALU Class
+                ALU.Modulus(FinalModulusNumbers[0], FinalModulusNumbers[1])
                 ALUInputPoint = True
         
                 
