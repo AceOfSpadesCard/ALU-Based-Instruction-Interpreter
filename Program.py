@@ -4,7 +4,6 @@ from time import sleep
 
 # Initializing the primary variables
 Exit = False
-ALUPoint = False
 RegisterPoint = False
 
 # Count of program cycles
@@ -22,7 +21,7 @@ InstructionMemory = (
     "MOD 1,2",
     "FINAL SUM")
 """
-
+"""
 # The programs instruction memory. Where the user writes their instructions
 InstructionMemory = (
     "READ RegisterA",
@@ -38,6 +37,16 @@ InstructionMemory = (
     "WRITE RegisterD Chaat Bhavan",
     "READ RegisterD",
     "CycleCount")
+"""
+InstructionMemory = (
+    "YES 1",
+    "NOT 0",
+    "AND 1,0",
+    "OR 1,0",
+    "XOR 1,0",
+    "NAND 1,0",
+    "NOR 1,0",
+    "XNOR 1,0",)
 
 # ArithmeticLogicUnit class containing Arithmetic and Logic Operations
 class ArithmeticLogicUnit:
@@ -82,21 +91,21 @@ class ArithmeticLogicUnit:
         return (NumberOne % NumberTwo)
       
     # Yes Logic Gate
-    def Yes(Bit):
+    def Yes(self, Bit):
         if Bit == 0:
             return 0
         if Bit == 1:
             return 1
         
     # NOT Logic Gate
-    def NOT(Bit):
+    def NOT(self, Bit):
         if Bit == 0:
             return 1
         elif Bit == 1:
             return 0
         
     # AND Logic Gate
-    def AND(BitA, BitB):
+    def AND(self, BitA, BitB):
         if (BitA and BitB) == 0:
             return 0
         elif (BitA and BitB) == 1:
@@ -105,7 +114,7 @@ class ArithmeticLogicUnit:
             return 0
         
     # OR Logic Gate
-    def OR(BitA, BitB):
+    def OR(self, BitA, BitB):
         if (BitA == 1) or (BitB == 1):
             return 1
         elif (BitA and BitB) == 0:
@@ -114,7 +123,7 @@ class ArithmeticLogicUnit:
             return 1
         
     # XOR Logic Gate
-    def XOR(BitA, BitB):
+    def XOR(self, BitA, BitB):
         if (BitA and BitB) == 1:
             return 0
         elif (BitA == 1) or (BitB == 1):
@@ -123,7 +132,7 @@ class ArithmeticLogicUnit:
             return 0
         
     # NAND Logic Gate
-    def NAND(BitA, BitB):
+    def NAND(self, BitA, BitB):
         if (BitA and BitB) == 1:
             return 0
         if (BitA and BitB) == 0:
@@ -132,7 +141,7 @@ class ArithmeticLogicUnit:
             return 1
         
     # NOR Logic Gate
-    def NOR(BitA, BitB):
+    def NOR(self, BitA, BitB):
         if (BitA == 1) or (BitB == 1):
             return 0
         elif (BitA and BitB) == 1:
@@ -141,7 +150,7 @@ class ArithmeticLogicUnit:
             return 1
         
     # XNOR Logic Gate
-    def XNOR(BitA, BitB):
+    def XNOR(self, BitA, BitB):
         if (BitA == 0) and (BitB == 0):
             return 1
         elif (BitA and BitB) == 1:
@@ -217,7 +226,7 @@ for Line in InstructionMemory:
     if Line == "CycleCount":
         print(CycleCount)
         
-    # ALU Interface
+    # Arithmetic Unit
     if Line == "FINAL SUM":
         print(FinalSum)
     
@@ -241,11 +250,6 @@ for Line in InstructionMemory:
         # Call the Addition Function from the ALU Class
         Return = ALU.Addition(FinalAdditionNumbers)
         print(Return)
-            
-        ALUPoint = False
-        LinePoint = False
-        DoubleUserInputCheck = False
-        UserInputCheck = True
                 
         FinalSum += Return
                 
@@ -270,11 +274,6 @@ for Line in InstructionMemory:
         Return = ALU.Subtraction(FinalSubtractionNumbers)
         print(Return)
             
-        ALUPoint = False
-        LinePoint = False
-        DoubleUserInputCheck = False
-        UserInputCheck = True
-            
         FinalSum += Return
                 
     # If the MUL Command is present, then commence the MUL Procedure
@@ -298,11 +297,6 @@ for Line in InstructionMemory:
         Return = ALU.Multiplication(FinalMultiplicationNumbers)
         print(Return)
             
-        ALUPoint = False
-        LinePoint = False
-        DoubleUserInputCheck = False
-        UserInputCheck = True
-            
         FinalSum += Return
                 
     # If the DIV Command is present, then commence the DIV Procedure
@@ -325,11 +319,6 @@ for Line in InstructionMemory:
         # Call the Division Function from the ALU Class
         Return = ALU.Division(FinalDivisionNumbers)
         print(Return)
-            
-        ALUPoint = False
-        LinePoint = False
-        DoubleUserInputCheck = False
-        UserInputCheck = True
                 
         FinalSum += Return
                 
@@ -354,13 +343,121 @@ for Line in InstructionMemory:
         Return = ALU.Modulus(FinalModulusNumbers[0], FinalModulusNumbers[1])
         print(Return)
             
-        ALUPoint = False
-        LinePoint = False
-        DoubleUserInputCheck = False
-        UserInputCheck = True
-            
         FinalSum += Return
+    
+    # Logic Unit
+    
+    # YES Logic Gate
+    if Line[0:3] == "YES":
+        YesNumbers = Line[4:]
 
+        RawYesNumbers = YesNumbers.split(",")
+        FinalYesNumbers = []
+
+        for YesNumber in RawYesNumbers:
+            YesNumber = int(YesNumber)
+            FinalYesNumbers.append(int(YesNumber))
+
+        Return = ALU.Yes(FinalYesNumbers[0])
+        print(Return)
+        
+    # NOT Logic Gate
+    if Line[0:3] == "NOT":
+        NotNumbers = Line[4:]
+
+        RawNotNumbers = NotNumbers.split(",")
+        FinalNotNumbers = []
+
+        for NotNumber in RawNotNumbers:
+            NotNumber = int(NotNumber)
+            FinalNotNumbers.append(int(NotNumber))
+
+        Return = ALU.NOT(FinalNotNumbers[0])
+        print(Return)
+    
+    # AND Logic Gate
+    if Line[0:3] == "AND":
+        AndNumbers = Line[4:]
+
+        RawAndNumbers = AndNumbers.split(",")
+        FinalAndNumbers = []
+
+        for AndNumber in RawAndNumbers:
+            AndNumber = int(AndNumber)
+            FinalAndNumbers.append(int(AndNumber))
+
+        Return = ALU.AND(FinalAndNumbers[0], FinalAndNumbers[1])
+        print(Return)
+        
+    # OR Logic Gate
+    if Line[0:2] == "OR":
+        OrNumbers = Line[3:]
+
+        RawOrNumbers = OrNumbers.split(",")
+        FinalOrNumbers = []
+
+        for OrNumber in RawOrNumbers:
+            OrNumber = (OrNumber)
+            FinalOrNumbers.append(int(OrNumber))
+
+        Return = ALU.OR(FinalOrNumbers[0], FinalOrNumbers[1])
+        print(Return)
+        
+    # XOR Logic Gate
+    if Line[0:3] == "XOR":
+        XorNumbers = Line[4:]
+
+        RawXorNumbers = XorNumbers.split(",")
+        FinalXorNumbers = []
+
+        for XorNumber in RawXorNumbers:
+            FinalXorNumbers.append(int(XorNumber))
+
+        Return = ALU.XOR(FinalXorNumbers[0], FinalXorNumbers[1])
+        print(Return)
+    
+    # NAND Logic Gate
+    if Line[0:4] == "NAND":
+        NandNumbers = Line[5:]
+
+        RawNandNumbers = NandNumbers.split(",")
+        FinalNandNumbers = []
+
+        for NandNumber in RawNandNumbers:
+            NandNumber = int(NandNumber)
+            FinalNandNumbers.append(int(NandNumber))
+
+        Return = ALU.NAND(FinalNandNumbers[0], FinalNandNumbers[1])
+        print(Return)
+        
+    # NOR Logic Gate
+    if Line[0:3] == "NOR":
+        NorNumbers = Line[4:]
+
+        RawNorNumbers = NorNumbers.split(",")
+        FinalNorNumbers = []
+
+        for NorNumber in RawNorNumbers:
+            NorNumber = int(NorNumber)
+            FinalNorNumbers.append(int(NorNumber))
+
+        Return = ALU.NOR(FinalNorNumbers[0], FinalNorNumbers[1])
+        print(Return)
+        
+    # XNOR Logic Gate
+    if Line[0:4] == "XNOR":
+        XnorNumbers = Line[5:]
+
+        RawXnorNumbers = XnorNumbers.split(",")
+        FinalXnorNumbers = []
+
+        for XnorNumber in RawXnorNumbers:
+            XnorNumber = int(XnorNumber)
+            FinalXnorNumbers.append(int(XnorNumber))
+
+        Return = ALU.XNOR(FinalXnorNumbers[0], FinalXnorNumbers[1])
+        print(Return)
+        
     if Line[0:4] == "READ":
         RegisterOutput = RegisterControl.Read(Line[5:])
         print(Line[5:], "-->", RegisterOutput)
