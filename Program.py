@@ -16,11 +16,6 @@ InstructionMemory = []
 ALUInstructions = []
 ##############
 
-# Registers #
-RegisterA, RegisterB = float
-RegisterC, RegisterD = str
-RegisterE, RegisterF = bool
-
 # PROGRAM INSTRUCTIONS #
 INSTRUCTIONS = [
     "ADD 1,2",
@@ -79,20 +74,62 @@ class ArithmeticLogicUnit:
 # For writing and reading data from the registers
 class Register:
     
-    def __init__(self):
-        pass
-    
-    def Write(Register, Data, Overwrite=True):
-        if Register != None:
-            if Overwrite == True:
-                Register = Data
-            else:
-                print("Register Full")
-        else:
-            Register = Data
+    def __init__(self, InitValue):
         
-    def Read(Register):
-        return (Register)
+        # Registers #
+        self.RegisterA = InitValue
+        self.RegisterB = InitValue
+        self.RegisterC = InitValue
+        self.RegisterD = InitValue
+        self.RegisterE = InitValue
+        self.RegisterF = InitValue
+    
+    def Write(self, Register, Data):
+        if Register == "RegisterA":
+            self.RegisterA = Data
+            return (self.RegisterA)
+        
+        elif Register == "RegisterB":
+            self.RegisterB = Data
+            return (self.RegisterB)
+        
+        elif Register == "RegisterC":
+            self.RegisterC = Data
+            return (self.RegisterC)
+        
+        elif Register == "RegisterD":
+            self.RegisterD = Data
+            return (self.RegisterD)
+        
+        elif Register == "RegisterE":
+            self.RegisterE = Data
+            return (self.RegisterE)
+        
+        elif Register == "RegisterF":
+            self.RegisterF = Data
+            return (self.RegisterF)
+        
+    def Read(self, Register):
+        if Register == "RegisterA":
+            return (self.RegisterA)
+        
+        elif Register == "RegisterB":
+            return (self.RegisterB)
+        
+        elif Register == "RegisterC":
+            return (self.RegisterC)
+        
+        elif Register == "RegisterD":
+            return (self.RegisterD)
+        
+        elif Register == "RegisterE":
+            return (self.RegisterE)
+        
+        elif Register == "RegisterF":
+            return (self.RegisterF)
+        
+        else:
+            return ("Register does not exist")
     
 # Defining Pin 25 (Linked to the Internal LED) on the Raspberry Pi Pico for us to send a signal out
 LEDPin25 = Pin(25, Pin.OUT)
@@ -101,6 +138,7 @@ LEDPin25 = Pin(25, Pin.OUT)
 CycleCount = 0
 
 ALU = ArithmeticLogicUnit()
+RegisterControl = Register("")
 
 # User defines the computers clock speed
 ClockSpeed = float(input("DEFINE CLOCK SPEED [HERTZ]: "))
@@ -124,6 +162,9 @@ ALUExitPoint = False
 InstructionCount = -1
 ALUInput = None
 InstructionPoint = False
+RegisterCheck = True
+RegisterInputPoint = True
+RegisterInput = None
 
 FinalSum = 0
 FinalSumPoint = False
@@ -136,13 +177,9 @@ while Exit != True:
         if ALUInputPoint == True:
             # ALU Command Shell
             ALUInput = input("|ALU| --> ")
-        # If the EXIT Command is entered then break from the loop
-        elif "EXIT" in ALUInput:
-            ALUPoint = False
-            UserInputCheck = True
                 
         # If the ADD Command is present, then commence the ADD Procedure
-        elif ALUInput[0:3] == "ADD":
+        if ALUInput[0:3] == "ADD":
                 
             # Retrieve all the numbers after the ADD Command
             AdditionNumbers = ALUInput[4:]
@@ -172,7 +209,7 @@ while Exit != True:
                 FinalSum += Return
                 
         # If the SUB Command is present, then commence the SUB Procedure
-        elif ALUInput[0:3] == "SUB":
+        if ALUInput[0:3] == "SUB":
                 
             # Retrieve all the numbers after the SUB Command
             SubtractionNumbers = ALUInput[4:]
@@ -202,7 +239,7 @@ while Exit != True:
                 FinalSum += Return
                 
         # If the MUL Command is present, then commence the MUL Procedure
-        elif ALUInput[0:3] == "MUL":
+        if ALUInput[0:3] == "MUL":
                 
             # Retrieve all the numbers after the MUL Command
             MultiplicationNumbers = ALUInput[4:]
@@ -232,7 +269,7 @@ while Exit != True:
                 FinalSum += Return
                 
         # If the DIV Command is present, then commence the DIV Procedure
-        elif ALUInput[0:3] == "DIV":
+        if ALUInput[0:3] == "DIV":
                 
             # Retrieve all the numbers after the DIV Command
             DivisionNumbers = ALUInput[4:]
@@ -262,7 +299,7 @@ while Exit != True:
                 FinalSum += Return
                 
         # If the MOD Command is present, then commence the MOD Procedure
-        elif ALUInput[0:3] == "MOD":
+        if ALUInput[0:3] == "MOD":
                 
             # Retrieve all the numbers after the MOD Command
             ModulusNumbers = ALUInput[4:]
@@ -290,7 +327,30 @@ while Exit != True:
             # Checking if the user wants a final sum
             if FinalSumPoint == True:
                 FinalSum += Return
-     
+    
+        # If the EXIT Command is entered then break from the loop
+        if "EXIT" in ALUInput:
+            print("EXIT!")
+            ALUPoint = False
+            UserInputCheck = True
+            DoubleUserInputCheck = True
+            
+    # The section for register operations
+    elif RegisterCheck == True:
+        if RegisterInputPoint == True:
+            # Register Command Shell
+            RegisterInput = input("|RegisterCommand| --> ")
+            
+        if RegisterInput[0:4] == "READ":
+            RegisterOutput = RegisterControl.Read(RegisterInput[5:])
+            print(RegisterInput[5:], "-->", RegisterOutput)
+            
+        if RegisterInput[0:5] == "WRITE":
+            RegisterOutput = RegisterControl.Write(RegisterInput[6:15], RegisterInput[16:])
+
+            print("Data:", RegisterOutput)
+            
+        
     # If the UserInputCheck Variable
     elif UserInputCheck == True:
         
