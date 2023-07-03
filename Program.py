@@ -1,82 +1,157 @@
+# Importing Modules
 from machine import Pin
 from time import sleep
 
 # Initializing the primary variables
 Exit = False
-UserInputCheck = True
-DoubleUserInputCheck = True
 ALUPoint = False
+RegisterPoint = False
 
-# ROM Memory #
-Documentation = ()
-##############
+# Count of program cycles
+CycleCount = 0
 
-# RAM Memory #
-InstructionMemory = []
-ALUInstructions = []
-##############
+# Final Sum of all operations
+FinalSum = 0
 
-# PROGRAM INSTRUCTIONS #
-INSTRUCTIONS = [
+"""
+InstructionMemory = (
     "ADD 1,2",
     "SUB 1,2",
     "MUL 1,2",
     "DIV 1,2",
     "MOD 1,2",
-    "FINAL SUM"]
-###########################
+    "FINAL SUM")
+"""
 
-# List of Arithmetic Commands
-ArithmeticCommands = ["ADD", "SUB", "MUL", "DIV", "MOD"]
+# The programs instruction memory. Where the user writes their instructions
+InstructionMemory = (
+    "READ RegisterA",
+    "WRITE RegisterA Starbucks",
+    "READ RegisterA",
+    "READ RegisterB",
+    "WRITE RegisterB Subway",
+    "READ RegisterB",
+    "READ RegisterC",
+    "WRITE RegisterC TacoBell",
+    "READ RegisterC",
+    "READ RegisterD",
+    "WRITE RegisterD Chaat Bhavan",
+    "READ RegisterD",
+    "CycleCount")
 
-# Creating the Arithmetic Logic Unit Class
+# ArithmeticLogicUnit class containing Arithmetic and Logic Operations
 class ArithmeticLogicUnit:
     
     # Class Constructor
     def __init__(self):
         pass
     
-    # The addition function that performs addition on as many numbers as you want
+    # Addition Function, takes as many amount of numbers as the user desires
     def Addition(self, Numbers):
         Total = 0.0
         for Number in Numbers:
             Total += Number
         return (Total)
-        
-    # The subtraction function that performs subraction on as many numbers as you want
+
+    # Subtraction Function, takes as many amount of numbers as the user desires
     def Subtraction(self, Numbers):
         Primary = Numbers[0]
         Numbers.pop(0)
         for Number in Numbers:
             Primary -= Number
         return (Primary)
-        
-    # The multiplication function that performs multiplication on as many numbers as you want     
+    
+    # Multiplication Function, takes as many amount of numbers as the user desires
     def Multiplication(self, Numbers):
         Primary = Numbers[0]
         Numbers.pop(0)
         for Number in Numbers:
             Primary = Primary * Number
         return (Primary)
-    
-    # The division function that performs division on as many numbers as you want     
+  
+    # Division Function, takes as many amount of numbers as the user desires
     def Division(self, Numbers):
         Primary = Numbers[0]
         Numbers.pop(0)
         for Number in Numbers:
             Primary = Primary / Number
         return (Primary)
-    
-    # The modulus function that performs the modulus function on two numbers 
+
+    # Modulus Function, takes 2 numbers and returns the remainders
     def Modulus(self, NumberOne, NumberTwo):
         return (NumberOne % NumberTwo)
+      
+    # Yes Logic Gate
+    def Yes(Bit):
+        if Bit == 0:
+            return 0
+        if Bit == 1:
+            return 1
         
-# For writing and reading data from the registers
+    # NOT Logic Gate
+    def NOT(Bit):
+        if Bit == 0:
+            return 1
+        elif Bit == 1:
+            return 0
+        
+    # AND Logic Gate
+    def AND(BitA, BitB):
+        if (BitA and BitB) == 0:
+            return 0
+        elif (BitA and BitB) == 1:
+            return 1
+        elif (BitA == 1) or (BitB == 0):
+            return 0
+        
+    # OR Logic Gate
+    def OR(BitA, BitB):
+        if (BitA == 1) or (BitB == 1):
+            return 1
+        elif (BitA and BitB) == 0:
+            return 0
+        elif (BitA and BitB) == 1:
+            return 1
+        
+    # XOR Logic Gate
+    def XOR(BitA, BitB):
+        if (BitA and BitB) == 1:
+            return 0
+        elif (BitA == 1) or (BitB == 1):
+            return 1
+        elif (BitA and BitB) == 0:
+            return 0
+        
+    # NAND Logic Gate
+    def NAND(BitA, BitB):
+        if (BitA and BitB) == 1:
+            return 0
+        if (BitA and BitB) == 0:
+            return 1
+        elif (BitA == 1) or (BitB == 1):
+            return 1
+        
+    # NOR Logic Gate
+    def NOR(BitA, BitB):
+        if (BitA == 1) or (BitB == 1):
+            return 0
+        elif (BitA and BitB) == 1:
+            return 0
+        elif (BitA == 0) and (BitB == 0):
+            return 1
+        
+    # XNOR Logic Gate
+    def XNOR(BitA, BitB):
+        if (BitA == 0) and (BitB == 0):
+            return 1
+        elif (BitA and BitB) == 1:
+            return 1
+        elif (BitA == 1) or (BitB == 1):
+            return 0
+         
 class Register:
     
     def __init__(self, InitValue):
-        
-        # Registers #
         self.RegisterA = InitValue
         self.RegisterB = InitValue
         self.RegisterC = InitValue
@@ -110,310 +185,185 @@ class Register:
             return (self.RegisterF)
         
     def Read(self, Register):
-        if Register == "RegisterA":
-            return (self.RegisterA)
-        
-        elif Register == "RegisterB":
-            return (self.RegisterB)
-        
-        elif Register == "RegisterC":
-            return (self.RegisterC)
-        
-        elif Register == "RegisterD":
-            return (self.RegisterD)
-        
-        elif Register == "RegisterE":
-            return (self.RegisterE)
-        
-        elif Register == "RegisterF":
-            return (self.RegisterF)
-        
-        else:
-            return ("Register does not exist")
+        if Register == "RegisterA": return (self.RegisterA)
+        elif Register == "RegisterB": return (self.RegisterB)
+        elif Register == "RegisterC": return (self.RegisterC)
+        elif Register == "RegisterD": return (self.RegisterD)
+        elif Register == "RegisterE": return (self.RegisterE)
+        elif Register == "RegisterF": return (self.RegisterF)
+        else: return ("Register does not exist")
     
-# Defining Pin 25 (Linked to the Internal LED) on the Raspberry Pi Pico for us to send a signal out
 LEDPin25 = Pin(25, Pin.OUT)
-
-# Count of times the clock cycle has occured
-CycleCount = 0
 
 ALU = ArithmeticLogicUnit()
 RegisterControl = Register("")
 
-# User defines the computers clock speed
 ClockSpeed = float(input("DEFINE CLOCK SPEED [HERTZ]: "))
-
-# Defining the Clock Function which determines the speed of the CPU
 def ClockCycle():
-    # 1 Hertz = 1 Clock Cycle in 1 Second
-    # Therfore a clock speed of 5 Hertz means 5 Clock Cycles completed in 1 Second
-    
-    # The Speed variable is the number we will enter in the sleep function
     Speed = 1 / float(ClockSpeed)
-    
     LEDPin25.toggle()
     sleep(Speed/2)
     LEDPin25.toggle()
     sleep(Speed/2)
+
+# Interating through each line of the InstructionMemory
+for Line in InstructionMemory:
     
-# Defining Check Minor Variables
-ALUInputPoint = False
-ALUExitPoint = False
-InstructionCount = -1
-ALUInput = None
-InstructionPoint = False
-RegisterCheck = True
-RegisterInputPoint = True
-RegisterInput = None
-
-FinalSum = 0
-FinalSumPoint = False
-
-while Exit != True:
+    # Clock Cycle
     ClockCycle()
     CycleCount += 1
     
-    if ALUPoint == True:
-        if ALUInputPoint == True:
-            # ALU Command Shell
-            ALUInput = input("|ALU| --> ")
-                
-        # If the ADD Command is present, then commence the ADD Procedure
-        if ALUInput[0:3] == "ADD":
-                
-            # Retrieve all the numbers after the ADD Command
-            AdditionNumbers = ALUInput[4:]
-
-            # Split them into a list, based on the comma
-            RawAdditionNumbers = AdditionNumbers.split(",")
-            FinalAdditionNumbers = []
-
-            # Run a loop iterating through the list, and changing their data type to a float
-            for AdditionNumber in RawAdditionNumbers:
-                AdditionNumber = float(AdditionNumber)
-
-                # Then appending them into the new list, FinalAdditionNumbers which will be passed as a argument to the ALU Class
-                FinalAdditionNumbers.append(float(AdditionNumber))
-                
-            # Call the Addition Function from the ALU Class
-            Return = ALU.Addition(FinalAdditionNumbers)
-            print(Return)
-            
-            ALUPoint = False
-            ALUInputPoint = False
-            DoubleUserInputCheck = False
-            UserInputCheck = True
-                
-            # Checking if the user wants a final sum
-            if FinalSumPoint == True:
-                FinalSum += Return
-                
-        # If the SUB Command is present, then commence the SUB Procedure
-        if ALUInput[0:3] == "SUB":
-                
-            # Retrieve all the numbers after the SUB Command
-            SubtractionNumbers = ALUInput[4:]
-                
-            # Split them into a list, based on the comma
-            RawSubtractionNumbers = SubtractionNumbers.split(",")
-            FinalSubtractionNumbers = []
-
-            # Run a loop iterating through the list, and changing their data type to a float
-            for SubtractionNumber in RawSubtractionNumbers:
-                SubtractionNumber = float(SubtractionNumber)
-
-                # Then appending them into the new list, FinalSubtractionNumbers which will be passed as a argument to the ALU Class
-                FinalSubtractionNumbers.append(float(SubtractionNumber))
-
-            # Call the Subtraction Function from the ALU Class
-            Return = ALU.Subtraction(FinalSubtractionNumbers)
-            print(Return)
-            
-            ALUPoint = False
-            ALUInputPoint = False
-            DoubleUserInputCheck = False
-            UserInputCheck = True
-            
-            # Checking if the user wants a final sum
-            if FinalSumPoint == True:
-                FinalSum += Return
-                
-        # If the MUL Command is present, then commence the MUL Procedure
-        if ALUInput[0:3] == "MUL":
-                
-            # Retrieve all the numbers after the MUL Command
-            MultiplicationNumbers = ALUInput[4:]
-                
-            # Split them into a list, based on the comma
-            RawMultiplicationNumbers = MultiplicationNumbers.split(",")
-            FinalMultiplicationNumbers = []
-
-            # Run a loop iterating through the list, and changing their data type to a float
-            for MultiplicationNumber in RawMultiplicationNumbers:
-                MultiplicationNumber = float(MultiplicationNumber)
-
-                # Then appending them into the new list, FinalMultiplicationNumbers which will be passed as a argument to the ALU Class
-                FinalMultiplicationNumbers.append(float(MultiplicationNumber))
-
-            # Call the Multiplication Function from the ALU Class
-            Return = ALU.Multiplication(FinalMultiplicationNumbers)
-            print(Return)
-            
-            ALUPoint = False
-            ALUInputPoint = False
-            DoubleUserInputCheck = False
-            UserInputCheck = True
-            
-            # Checking if the user wants a final sum
-            if FinalSumPoint == True:
-                FinalSum += Return
-                
-        # If the DIV Command is present, then commence the DIV Procedure
-        if ALUInput[0:3] == "DIV":
-                
-            # Retrieve all the numbers after the DIV Command
-            DivisionNumbers = ALUInput[4:]
-            
-            # Split them into a list, based on the comma
-            RawDivisionNumbers = DivisionNumbers.split(",")
-            FinalDivisionNumbers = []
-
-            # Run a loop iterating through the list, and changing their data type to a float
-            for DivisionNumber in RawDivisionNumbers:
-                DivisionNumber = float(DivisionNumber)
-
-                # Then appending them into the new list, FinalDivisionNumbers which will be passed as a argument to the ALU Class
-                FinalDivisionNumbers.append(float(DivisionNumber))
-
-            # Call the Division Function from the ALU Class
-            Return = ALU.Division(FinalDivisionNumbers)
-            print(Return)
-            
-            ALUPoint = False
-            ALUInputPoint = False
-            DoubleUserInputCheck = False
-            UserInputCheck = True
-                
-            # Checking if the user wants a final sum
-            if FinalSumPoint == True:
-                FinalSum += Return
-                
-        # If the MOD Command is present, then commence the MOD Procedure
-        if ALUInput[0:3] == "MOD":
-                
-            # Retrieve all the numbers after the MOD Command
-            ModulusNumbers = ALUInput[4:]
-                
-            # Split them into a list, based on the comma
-            RawModulusNumbers = ModulusNumbers.split(",")
-            FinalModulusNumbers = []
-
-            # Run a loop iterating through the list, and changing their data type to a float
-            for ModulusNumber in RawModulusNumbers:
-                ModulusNumber = float(ModulusNumber)
-
-                # Then appending them into the new list, FinalModulusNumbers which will be passed as a argument to the ALU Class
-                FinalModulusNumbers.append(float(ModulusNumber))
-
-            # Call the Modulus Function from the ALU Class
-            Return = ALU.Modulus(FinalModulusNumbers[0], FinalModulusNumbers[1])
-            print(Return)
-            
-            ALUPoint = False
-            ALUInputPoint = False
-            DoubleUserInputCheck = False
-            UserInputCheck = True
-            
-            # Checking if the user wants a final sum
-            if FinalSumPoint == True:
-                FinalSum += Return
+    # Printing the number of excecuted clock cycles
+    if Line == "CycleCount":
+        print(CycleCount)
+        
+    # ALU Interface
+    if Line == "FINAL SUM":
+        print(FinalSum)
     
-        # If the EXIT Command is entered then break from the loop
-        if "EXIT" in ALUInput:
-            print("EXIT!")
-            ALUPoint = False
-            UserInputCheck = True
-            DoubleUserInputCheck = True
-            
-    # The section for register operations
-    elif RegisterCheck == True:
-        if RegisterInputPoint == True:
-            # Register Command Shell
-            RegisterInput = input("|RegisterCommand| --> ")
-            
-        if RegisterInput[0:4] == "READ":
-            RegisterOutput = RegisterControl.Read(RegisterInput[5:])
-            print(RegisterInput[5:], "-->", RegisterOutput)
-            
-        if RegisterInput[0:5] == "WRITE":
-            RegisterOutput = RegisterControl.Write(RegisterInput[6:15], RegisterInput[16:])
-
-            print("Data:", RegisterOutput)
-            
-        
-    # If the UserInputCheck Variable
-    elif UserInputCheck == True:
-        
-        # Checking for if the CPU should collect User Input:
-        if DoubleUserInputCheck == True:
-            UserInput = input("### ")
-        
-        # If the user wants to load the program from their file, then...
-        if UserInput == "LOAD INSTRUCTIONS":
-            # Appending the User's Instructions into the Instruction Memory
-            for Instruction in INSTRUCTIONS:
-                InstructionMemory.append(Instruction)
+    # If the ADD Command is present, then commence the ADD Procedure
+    if Line[0:3] == "ADD":
                 
-            # Printing a header, to signify the start of the user defined program
-            print((len(InstructionMemory[0])+2) * "#")
-            
-            for Instruction in InstructionMemory:
-                print(Instruction)
-                
-            # Printing a footer to signify the end of the user defined program
-            print((len(InstructionMemory[0])+2) * "#")
-            
-        # If the user wants to excecute the user defined program
-        if UserInput == "EXCECUTE INSTRUCTIONS":
-            for Command in ArithmeticCommands:
-                for Instruction in InstructionMemory:
-                    if Command in Instruction:
-                        ALUInstructions.append(Instruction)
-            if InstructionMemory[-1] == "FINAL SUM":
-                FinalSumPoint = True
-            if ALUInstructions != None:
-                ALUPoint = True
-                ALUInputPoint = False
-            InstructionPoint = True
-        
-        if InstructionPoint == True:
-            InstructionCount += 1
-            ALUInput = InstructionMemory[InstructionCount]
-            
-            if InstructionCount >= (len(InstructionMemory) - 1):
-                InstructionPoint = False
-                DoubleUserInputCheck = True
-                ALUPoint = False
-        
-                if FinalSumPoint == True:
-                    print("Final Sum -->", FinalSum)
-                    FinalSum = 0
-                    InstructionCount = -1
-                    FinalSumPoint = False
-            
-        # If the 'EXIT' command is entered then set the Exit variable to True
-        elif UserInput == "EXIT" :
-            Exit = True
+        # Retrieve all the numbers after the ADD Command
+        AdditionNumbers = Line[4:]
 
-        # Allows the user to directly accesss the ALU itself
-        elif UserInput == "|ALU|":
-            ALUPoint = True
-            ALUInputPoint = True
-            UserInputCheck = False
-        
-        # Print the number of clock cycles completed
-        elif UserInput == "ClockCycleCount_Show":
-            print("Excecuted Clock Cycles:", CycleCount)
+        # Split them into a list, based on the comma
+        RawAdditionNumbers = AdditionNumbers.split(",")
+        FinalAdditionNumbers = []
+
+        # Run a loop iterating through the list, and changing their data type to a float
+        for AdditionNumber in RawAdditionNumbers:
+            AdditionNumber = float(AdditionNumber)
+
+            # Then appending them into the new list, FinalAdditionNumbers which will be passed as a argument to the ALU Class
+            FinalAdditionNumbers.append(float(AdditionNumber))
+                
+        # Call the Addition Function from the ALU Class
+        Return = ALU.Addition(FinalAdditionNumbers)
+        print(Return)
             
-    else:
-        print("Soon to be Error Handeling")
+        ALUPoint = False
+        LinePoint = False
+        DoubleUserInputCheck = False
+        UserInputCheck = True
+                
+        FinalSum += Return
+                
+    # If the SUB Command is present, then commence the SUB Procedure
+    if Line[0:3] == "SUB":
+                
+        # Retrieve all the numbers after the SUB Command
+        SubtractionNumbers = Line[4:]
+                
+        # Split them into a list, based on the comma
+        RawSubtractionNumbers = SubtractionNumbers.split(",")
+        FinalSubtractionNumbers = []
+
+        # Run a loop iterating through the list, and changing their data type to a float
+        for SubtractionNumber in RawSubtractionNumbers:
+            SubtractionNumber = float(SubtractionNumber)
+
+            # Then appending them into the new list, FinalSubtractionNumbers which will be passed as a argument to the ALU Class
+            FinalSubtractionNumbers.append(float(SubtractionNumber))
+
+        # Call the Subtraction Function from the ALU Class
+        Return = ALU.Subtraction(FinalSubtractionNumbers)
+        print(Return)
+            
+        ALUPoint = False
+        LinePoint = False
+        DoubleUserInputCheck = False
+        UserInputCheck = True
+            
+        FinalSum += Return
+                
+    # If the MUL Command is present, then commence the MUL Procedure
+    if Line[0:3] == "MUL":
+                
+        # Retrieve all the numbers after the MUL Command
+        MultiplicationNumbers = Line[4:]
+                
+        # Split them into a list, based on the comma
+        RawMultiplicationNumbers = MultiplicationNumbers.split(",")
+        FinalMultiplicationNumbers = []
+
+        # Run a loop iterating through the list, and changing their data type to a float
+        for MultiplicationNumber in RawMultiplicationNumbers:
+            MultiplicationNumber = float(MultiplicationNumber)
+
+            # Then appending them into the new list, FinalMultiplicationNumbers which will be passed as a argument to the ALU Class
+            FinalMultiplicationNumbers.append(float(MultiplicationNumber))
+
+        # Call the Multiplication Function from the ALU Class
+        Return = ALU.Multiplication(FinalMultiplicationNumbers)
+        print(Return)
+            
+        ALUPoint = False
+        LinePoint = False
+        DoubleUserInputCheck = False
+        UserInputCheck = True
+            
+        FinalSum += Return
+                
+    # If the DIV Command is present, then commence the DIV Procedure
+    if Line[0:3] == "DIV":
+                
+        # Retrieve all the numbers after the DIV Command
+        DivisionNumbers = Line[4:]
+        
+        # Split them into a list, based on the comma
+        RawDivisionNumbers = DivisionNumbers.split(",")
+        FinalDivisionNumbers = []
+
+        # Run a loop iterating through the list, and changing their data type to a float
+        for DivisionNumber in RawDivisionNumbers:
+            DivisionNumber = float(DivisionNumber)
+
+            # Then appending them into the new list, FinalDivisionNumbers which will be passed as a argument to the ALU Class
+            FinalDivisionNumbers.append(float(DivisionNumber))
+            
+        # Call the Division Function from the ALU Class
+        Return = ALU.Division(FinalDivisionNumbers)
+        print(Return)
+            
+        ALUPoint = False
+        LinePoint = False
+        DoubleUserInputCheck = False
+        UserInputCheck = True
+                
+        FinalSum += Return
+                
+    # If the MOD Command is present, then commence the MOD Procedure
+    if Line[0:3] == "MOD":
+                
+        # Retrieve all the numbers after the MOD Command
+        ModulusNumbers = Line[4:]
+                
+        # Split them into a list, based on the comma
+        RawModulusNumbers = ModulusNumbers.split(",")
+        FinalModulusNumbers = []
+
+        # Run a loop iterating through the list, and changing their data type to a float
+        for ModulusNumber in RawModulusNumbers:
+            ModulusNumber = float(ModulusNumber)
+
+            # Then appending them into the new list, FinalModulusNumbers which will be passed as a argument to the ALU Class
+            FinalModulusNumbers.append(float(ModulusNumber))
+
+        # Call the Modulus Function from the ALU Class
+        Return = ALU.Modulus(FinalModulusNumbers[0], FinalModulusNumbers[1])
+        print(Return)
+            
+        ALUPoint = False
+        LinePoint = False
+        DoubleUserInputCheck = False
+        UserInputCheck = True
+            
+        FinalSum += Return
+
+    if Line[0:4] == "READ":
+        RegisterOutput = RegisterControl.Read(Line[5:])
+        print(Line[5:], "-->", RegisterOutput)
+            
+    if Line[0:5] == "WRITE":
+        RegisterOutput = RegisterControl.Write(Line[6:15], Line[16:])
