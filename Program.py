@@ -12,8 +12,6 @@ CycleCount = 0
 # Final Sum of all operations
 FinalSum = 0
 
-# Dictionary to parse comparision commands
-
 # The programs instruction memory. Where the user writes their instructions
 InstructionMemory = (
     "ADD 1,2",
