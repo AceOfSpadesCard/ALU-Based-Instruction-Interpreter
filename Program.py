@@ -1,4 +1,4 @@
-\# Importing Modules
+# Importing Modules
 from machine import Pin
 from time import sleep
 
