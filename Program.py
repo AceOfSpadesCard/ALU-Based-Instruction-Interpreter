@@ -13,41 +13,7 @@ CycleCount = 0
 FinalSum = 0
 
 # The programs instruction memory. Where the user writes their instructions
-InstructionMemory = (
-    "ADD 1,2",
-    "SUB 1,2",
-    "MUL 1,2",
-    "DIV 1,2",
-    "MOD 1,2",
-    "FINAL SUM",
-    "READ RegisterA",
-    "WRITE RegisterA Starbucks",
-    "READ RegisterA",
-    "READ RegisterB",
-    "WRITE RegisterB Subway",
-    "READ RegisterB",
-    "READ RegisterC",
-    "WRITE RegisterC TacoBell",
-    "READ RegisterC",
-    "READ RegisterD",
-    "WRITE RegisterD Chaat Bhavan",
-    "READ RegisterD",
-    "CycleCount",
-    "YES 1",
-    "NOT 0",
-    "AND 1,0",
-    "OR 1,0",
-    "XOR 1,0",
-    "NAND 1,0",
-    "NOR 1,0",
-    "XNOR 1,0",
-    "CollectINT BroWSG ",
-    "CollectSTRING BroWSG ",
-    "CollectFLOAT BroWSG ",
-    "CollectBOOLEAN BroWSG ",
-    "READ InputRegister",
-    "CompareN=5,5",
-    "CompareR=A,F")
+InstructionMemory = ()
 
 # ArithmeticLogicUnit class containing Arithmetic and Logic Operations
 class ArithmeticLogicUnit:
