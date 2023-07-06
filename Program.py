@@ -1,4 +1,4 @@
-# Importing Modules
+\# Importing Modules
 from machine import Pin
 from time import sleep
 
@@ -12,18 +12,16 @@ CycleCount = 0
 # Final Sum of all operations
 FinalSum = 0
 
-"""
+# Dictionary to parse comparision commands
+
+# The programs instruction memory. Where the user writes their instructions
 InstructionMemory = (
     "ADD 1,2",
     "SUB 1,2",
     "MUL 1,2",
     "DIV 1,2",
     "MOD 1,2",
-    "FINAL SUM")
-"""
-"""
-# The programs instruction memory. Where the user writes their instructions
-InstructionMemory = (
+    "FINAL SUM",
     "READ RegisterA",
     "WRITE RegisterA Starbucks",
     "READ RegisterA",
@@ -36,9 +34,7 @@ InstructionMemory = (
     "READ RegisterD",
     "WRITE RegisterD Chaat Bhavan",
     "READ RegisterD",
-    "CycleCount")
-"""
-InstructionMemory = (
+    "CycleCount",
     "YES 1",
     "NOT 0",
     "AND 1,0",
@@ -46,7 +42,14 @@ InstructionMemory = (
     "XOR 1,0",
     "NAND 1,0",
     "NOR 1,0",
-    "XNOR 1,0",)
+    "XNOR 1,0",
+    "CollectINT BroWSG ",
+    "CollectSTRING BroWSG ",
+    "CollectFLOAT BroWSG ",
+    "CollectBOOLEAN BroWSG ",
+    "READ InputRegister",
+    "CompareN=5,5",
+    "CompareR=A,F")
 
 # ArithmeticLogicUnit class containing Arithmetic and Logic Operations
 class ArithmeticLogicUnit:
@@ -167,6 +170,7 @@ class Register:
         self.RegisterD = InitValue
         self.RegisterE = InitValue
         self.RegisterF = InitValue
+        self.InputRegister = InitValue
     
     def Write(self, Register, Data):
         if Register == "RegisterA":
@@ -193,6 +197,10 @@ class Register:
             self.RegisterF = Data
             return (self.RegisterF)
         
+        elif Register == "InputRegister":
+            self.InputRegister = Data
+            return (self.InputRegister)
+        
     def Read(self, Register):
         if Register == "RegisterA": return (self.RegisterA)
         elif Register == "RegisterB": return (self.RegisterB)
@@ -200,12 +208,41 @@ class Register:
         elif Register == "RegisterD": return (self.RegisterD)
         elif Register == "RegisterE": return (self.RegisterE)
         elif Register == "RegisterF": return (self.RegisterF)
+        elif Register == "InputRegister": return (self.InputRegister)
         else: return ("Register does not exist")
+    
+# Comparision Registers
+ComparisionRegisterA = False
+ComparisionRegisterB = False
+ComparisionRegisterC = False
+
+# Comparision Unit
+class Comparision:
+    
+    def __init__(self, InitValue):
+        pass
+    
+    def GreaterThan(self, Object1, Object2):
+        Result = ((Object1) > (Object2))
+        self.ComparisionRegisterA = Result
+        return Result
+    
+    def LessThan(self, Object1, Object2):
+        Result = ((Object1) < (Object2))
+        self.ComparisionRegisterB = Result
+        return Result
+    
+    def EqualTo(self, Object1, Object2):
+        Result = ((Object1) == (Object2))
+        self.ComparisionRegisterC = Result
+        return Result
     
 LEDPin25 = Pin(25, Pin.OUT)
 
+
 ALU = ArithmeticLogicUnit()
 RegisterControl = Register("")
+ComparisionControl = Comparision("")
 
 ClockSpeed = float(input("DEFINE CLOCK SPEED [HERTZ]: "))
 def ClockCycle():
@@ -457,7 +494,92 @@ for Line in InstructionMemory:
 
         Return = ALU.XNOR(FinalXnorNumbers[0], FinalXnorNumbers[1])
         print(Return)
+     
+    # Input Managment Unit
+    if Line[0:7] == "Collect":
+        if Line[7:10] == "INT":
+            CollectInput = int(input(Line[11:]))
+            print(CollectInput)
+            
+        if Line[7:13] == "STRING":
+            CollectInput = input(Line[14:])
+            print(CollectInput)
+            
+        if Line[7:12] == "FLOAT":
+            CollectInput = float(input(Line[13:]))
+            print(CollectInput)
+            
+        if Line[7:14] == "BOOLEAN":
+            CollectInput = bool(input(Line[15:]))
+            print(CollectInput)
+            
+        RegisterControl.Write("InputRegister", CollectInput)
+    
+    # Comparing Managment Unit
+    if Line[0:7] == "Compare":
+        CompInput = Line[9:]
+        RawCompInput = CompInput.split(",")
         
+        if RawCompInput[0] == "A":
+            EndResult1 = RegisterControl.RegisterA
+        if RawCompInput[0] == "B":
+            EndResult1 = RegisterControl.RegisterB
+        if RawCompInput[0] == "C":
+            EndResult1 = RegisterControl.RegisterC
+        if RawCompInput[0] == "D":
+            EndResult1 = RegisterControl.RegisterD
+        if RawCompInput[0] == "E":
+            EndResult1 = RegisterControl.RegisterE
+        if RawCompInput[0] == "F":
+            EndResult1 = RegisterControl.RegisterF
+        
+        if RawCompInput[1] == "A":
+            EndResult2 = RegisterControl.RegisterA
+        if RawCompInput[1] == "B":
+            EndResult2 = RegisterControl.RegisterB
+        if RawCompInput[1] == "C":
+            EndResult2 = RegisterControl.RegisterC
+        if RawCompInput[1] == "D":
+            EndResult2 = RegisterControl.RegisterD
+        if RawCompInput[1] == "E":
+            EndResult2 = RegisterControl.RegisterE
+        if RawCompInput[1] == "F":
+            EndResult2 = RegisterControl.RegisterF
+        
+        if Line[7] == "R":
+            if Line[8] == ">":
+                GreaterResult = ComparisionControl.GreaterThan(EndResult1, EndResult2)
+                ComparisionRegisterA = (GreaterResult)
+                print(ComparisionRegisterA)
+            if Line[8] == "<":
+                LessResult = ComparisionControl.LessThan(EndResult1, EndResult2)
+                ComparisionRegisterB = (LessResult)
+                print(ComparisionRegisterB)
+            if Line[8] == "=":
+                EqualResult = ComparisionControl.EqualTo(EndResult1, EndResult2)
+                ComparisionRegisterC = (EqualResult)
+                print(ComparisionRegisterC)
+        else:
+            if Line[8] == ">":
+                GreaterInput = Line[9:]
+                RawGreaterInput = GreaterInput.split(",")
+                GreaterResult = ComparisionControl.GreaterThan(RawGreaterInput[0], RawGreaterInput[1])
+                ComparisionRegisterA = (GreaterResult)
+                print(ComparisionRegisterA)
+            if Line[8] == "<":
+                LessInput = Line[9:]
+                RawLessInput = LessInput.split(",")
+                LessResult = ComparisionControl.LessThan(RawLessInput[0], RawLessInput[1])
+                ComparisionRegisterB = (LessResult)
+                print(ComparisionRegisterB)
+            if Line[8] == "=":
+                EqualInput = Line[9:]
+                RawEqualInput = EqualInput.split(",")
+                EqualResult = ComparisionControl.EqualTo(RawEqualInput[0], RawEqualInput[1])
+                ComparisionRegisterC = (EqualResult)
+                print(ComparisionRegisterC)
+ 
+    # Register Managment Unit
     if Line[0:4] == "READ":
         RegisterOutput = RegisterControl.Read(Line[5:])
         print(Line[5:], "-->", RegisterOutput)
