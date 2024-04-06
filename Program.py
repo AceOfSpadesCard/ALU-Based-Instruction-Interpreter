@@ -1,6 +1,6 @@
 # Importing Modules
-from machine import Pin
 from time import sleep
+from machine import Pin
 
 # Initializing the primary variables
 Exit = False
@@ -201,7 +201,7 @@ class Comparision:
         self.ComparisionRegisterC = Result
         return Result
     
-LEDPin25 = Pin(25, Pin.OUT)
+# LEDPin25 = Pin(25, Pin.OUT)
 
 
 ALU = ArithmeticLogicUnit()
@@ -211,9 +211,9 @@ ComparisionControl = Comparision("")
 ClockSpeed = float(input("DEFINE CLOCK SPEED [HERTZ]: "))
 def ClockCycle():
     Speed = 1 / float(ClockSpeed)
-    LEDPin25.toggle()
+    # LEDPin25.toggle()
     sleep(Speed/2)
-    LEDPin25.toggle()
+    # LEDPin25.toggle()
     sleep(Speed/2)
 
 # Interating through each line of the InstructionMemory
